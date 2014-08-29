@@ -16,6 +16,7 @@ namespace ST
     /// Can also use AStarPathfinder from Asset Store instead.
     /// 
     /// TODO: 
+    /// - fix movement to adhere to specific map type by calling tile/position methods on map
     /// - might want to refactor to use the new Tileset instead of gameobject
     /// - add path smoothing after receiving set of waypoints from A*
     /// - test navmash navigation with steering behaviors snapping to 4-dir vectors
@@ -24,8 +25,18 @@ namespace ST
     {
         // public for A* unity plugin
         public TileCoord curTile;
+
+        // dependencies
         private Map map;
+
+        // rendering
+        private Tileset tileset;
+        private Rect currentFrame; // for use with tilesets
         private GameObject gameObject;
+        private Animator anim;
+        private string animPrefix = "[entity_type_name]";
+
+        // movement
         private Vector2 basePos;
         private List<TileCoord> waypoints;
         private TileCoord curWaypoint;
@@ -33,20 +44,23 @@ namespace ST
         private Direction curDir;
 
         // feet location offset
-        private float feetOffset = 28.0f;
-        private float speed = 0.0f;
-        private float speedMax = 60.0f;
+        private float feetOffset = 0f;
+        private float speed = 0f;
+        private float speedMax = 0f;
         private float zOffset = -0.75f;
-        private Animator anim;
-        private string animPrefix = "[entity_type_name]";
-        private int guid;
-
+               
         // Should be in highest level class, say Game.cs, where each game's "global" data is stored, don't use singletons if can be helped 
         private static int curGuid = 0;
+        private int guid;
 
         int nextGuid ()
         {
             return curGuid++;
+        }
+
+        int getGuid ()
+        {
+            return this.guid;
         }
 
         public Entity (Map m)
@@ -58,10 +72,12 @@ namespace ST
             this.curWaypoint = null;
             this.goalTile = null;
             this.waypoints = new List<TileCoord> ();
+
+            this.feetOffset = 28.0f * this.map.tUnit;
+            this.speedMax = 60.0f * this.map.tUnit;
         }
 
-        // Use this for initialization
-        public void Start (GameObject go)
+        public void EntityStart (GameObject go)
         {
             this.gameObject = go;
             setTile (new TileCoord (5, 10));
@@ -77,6 +93,7 @@ namespace ST
             SouthWest,
         }
 
+        // TODO: need to get from Map to support all types
         public Vector3 vectorForDirection (Direction dir)
         {
             switch (dir) {
@@ -96,12 +113,13 @@ namespace ST
         public void setPosition (Vector3 p)
         {
             basePos = new Vector2 (p.x, p.y);
+            var z = map.TileScreenDepth (new TileCoord (curTile.c, curTile.r, 0)) + zOffset;
+            var h = map.TileYOffsetForHeight (curTile);
 
-            //var z = map.wallLayer.zOrderForTile (curTile) + zOffset;
-            //var h = map.heightForTile (curTile);
-            //Debug.Log("h = " + h + " @ " + curTile);
-            //Vector3 pos = new Vector3 (p.x, p.y + h + feetOffset, z);
-            //gameObject.transform.position = pos;
+            //Debug.Log ("p = " + p + ", h = " + h + ", z = " + z + ", feetOffset = " + feetOffset + " =>  @ " + curTile);
+
+            Vector3 pos = new Vector3 (p.x, p.y + h + feetOffset, z);
+            gameObject.transform.position = pos;
         }
 
         public void updateFlip ()
@@ -147,7 +165,7 @@ namespace ST
                 break;
             }
 
-            if (null != animName) {
+            if (null != anim && null != animName) {
                 // TODO: create animator from scratch, or define required naming scheme "entity_name-anim_name"
                 string animHashString = this.animPrefix + "-" + animName;
                 int animHash = Animator.StringToHash (animHashString);
@@ -157,16 +175,15 @@ namespace ST
 //          }
         }
 
-        public void update ()
+        public void EntityUpdate ()
         {
             Vector2 curPos = basePos;
 
             if (null != curWaypoint || null != goalTile) {
-
+                Debug.Log("trying to get next waypoint " + UnityEngine.Time.time);
                 TileCoord nextTile = curWaypoint != null ? curWaypoint : goalTile != null ? goalTile : null;
                 if (null != nextTile) {
-                    //TODO: var pos3 = map.posForTile (nextTile);
-                    Vector2 pos3 = new Vector2 (0, 0);
+                    Vector3 pos3 = map.worldFromTile (nextTile);                   
                     Vector2 pos = new Vector2 (pos3.x, pos3.y);
 
                     var delta = pos - curPos;
@@ -182,7 +199,7 @@ namespace ST
                     speed = speedMax;
                     var vel = delta.normalized * speed * UnityEngine.Time.deltaTime;
                     vel = new Vector2 (vel.x, vel.y);
-                    //Debug.Log ("velocity = " + velocity);
+                    Debug.Log ("velocity = " + vel);
                     curPos += vel;
 
                     var epsilon = 1E-04f;
@@ -207,18 +224,17 @@ namespace ST
                             goalTile = null;
                         }
                     } else {
-                        // TODO
-//                      // check if we've moved to a new tile
-//                      var coord = map.tileForPos (curPos);
-//                      if (curTile == null || coord.c != curTile.c || coord.r != curTile.r) {
-//                          if (map.hasWall (coord)) {
-//                              // reset (move back)
-//                              curPos = basePos;
-//                              resetWaypoints ();
-//                          } else {
-//                              curTile = coord;
-//                          }
-//                      }
+                        // check if we've moved to a new tile
+                        var coord = map.tileFromWorld (curPos);
+                        if (curTile == null || coord.c != curTile.c || coord.r != curTile.r) {
+                            if (map.TileIsCollision (coord)) {
+                                // reset (move back)
+                                curPos = basePos;
+                                resetWaypoints ();
+                            } else {
+                                curTile = coord;
+                            }
+                        }
                     }
                 }
             } else {
@@ -235,10 +251,10 @@ namespace ST
         public void resetWaypoints ()
         {
             // TODO: fix map to allow
-//          if (null != curWaypoint)
-//              map.changeTileColor (curWaypoint, new Color (1f, 1f, 1f));
-//          if (null != goalTile)
-//              map.changeTileColor (goalTile, new Color (1f, 1f, 1f));
+            if (null != curWaypoint)
+                map.SetTileColor (curWaypoint, new Color (1f, 1f, 1f));
+            if (null != goalTile)
+                map.SetTileColor (goalTile, new Color (1f, 1f, 1f));
             
             curWaypoint = null;
             goalTile = null;
@@ -270,22 +286,23 @@ namespace ST
 
             Debug.Log ("starting find path from " + startCity + " to " + destinationCity);
             AStar.Path<AStar.Node> shortestPath = FindPath (start, destination, distanceFunc, manhattanEstimation);
-            Debug.Log ("found path");
 
             // DEBUG LOG
             // Prints the shortest path.
-            Debug.Log ("\nThis is the shortest path based on the A* Search Algorithm:\n");
-            foreach (AStar.Path<AStar.Node> path in shortestPath.Reverse()) {
+            if (shortestPath != null && shortestPath.Count () > 0) {
+                Debug.Log ("\nThis is the shortest path based on the A* Search Algorithm:\n");
+                foreach (AStar.Path<AStar.Node> path in shortestPath.Reverse()) {
 //              if (path.PreviousSteps != null) {
 //                  Debug.Log (string.Format ("From {0, -15}  to  {1, -15} -> Total cost = {2:#.###}",
 //                                                  path.PreviousSteps.LastStep.Key, path.LastStep.Key, path.TotalCost));
 //              }
 
-                int c = path.LastStep.X;
-                int r = path.LastStep.Y;
+                    int c = path.LastStep.X;
+                    int r = path.LastStep.Y;
 
-                Debug.Log ("adding waypoint " + r + ", " + c);
-                waypoints.Add (new TileCoord (c, r, -1));
+                    Debug.Log ("adding waypoint " + r + ", " + c);
+                    waypoints.Add (new TileCoord (c, r, -1));
+                }
             }
         }
 
@@ -305,114 +322,95 @@ namespace ST
                 curDir = dr < 0 ? Direction.SouthWest : Direction.NorthEast;
                 waypoints.Add (new TileCoord (curTile.c, goalTile.r, -1));
             }
+            Debug.Log("dc = " + dc + ", dr = " + dr + ", # waypoint = " + waypoints.Count());
         }
 
         public void setGoalTile (TileCoord coord)
         {
             // TODO: fix map to allow
-//          if (! map.validTileCoord (coord))
-//              return;
-//
-//          waypoints.Clear ();
-//
-//          var pos = basePos;
-//          curTile = map.tileForPos (pos);
-//          goalTile = coord;
-//
-//          if (map.UseAstarPathfinding) 
-//          {
-//              if (map.UseSimple2Dastar) 
-//              {
-//                  setGoalTileSimpleAStar (coord);
-//              }
-//              else 
-//              {
-//                  // use the actual A* plugin
-//                  
-//              }
-//          } else {
-//              setGoalTileSeek (coord);
-//          }
-//
-//          curWaypoint = waypoints[0];
-//          map.changeTileColor (curTile, new Color (1f, 0.3f, 0.3f));
-//          map.changeTileColor (curWaypoint, new Color (0.3f, 0.3f, 1f));
+            if (! this.map.IsTileValid (coord)) {
+                return;
+            }
+
+            waypoints.Clear ();
+
+            var pos = basePos;
+            curTile = map.tileFromWorld (pos);
+            goalTile = coord;
+
+            if (map.UseAstarPathfinding) {
+                if (map.UseSimple2Dastar) {
+                    setGoalTileSimpleAStar (coord);
+                } else {
+                    // use the actual A* plugin                  
+                }
+            } else {
+                setGoalTileSeek (coord);
+            }
+
+            if (waypoints.Count () > 0) {
+                curWaypoint = waypoints [0];
+                map.SetTileColor (curTile, new Color (1f, 0.3f, 0.3f));
+                map.SetTileColor (curWaypoint, new Color (0.3f, 0.3f, 1f));
+            }
         }
 
         public void setTile (TileCoord coord)
         {
-            // TODO: fix map to allow
-//            if (null != curTile) {
-//                map.changeTileIndex (curTile, 1);
-//            }
+            if (tileset == null) {
+//                // load tileset
+//                Vector2 tilePixelSize = new Vector2 (64, 64);
+//                //Vector2 tileAnchorPoint = new Vector2 (0.5f, 0.25f);
+//                Vector2 tileBaseSize = new Vector2 (1, 1); // how many map base tiles in size NxM
+//
+//                this.tileset = new Tileset (map, "terrain_1", tilePixelSize, tileBaseSize);
+//                var renderer = this.gameObject.GetComponent<MeshRenderer> (); 
+//                var mat = renderer.materials [0];
+//                mat.mainTexture = tileset.getTexture ();
+//                mat.shader = Shader.Find ("Steve/Mesh");
+            }
             curTile = coord;
-//            map.changeTileIndex (curTile, 2);
 
             var xy = map.worldFromTile (curTile);
             setPosition (new Vector3 (xy.x, xy.y));
         }
 
-
-
         /// <summary>
-        /// This is the method responsible for finding the shortest path between a Start and Destination cities using the A*
-        /// search algorithm.
+        /// Custom pathfinder that uses AStar lib to get nodes from start to destination
         /// </summary>
-        /// <typeparam name="TNode">The Node type</typeparam>
-        /// <param name="start">Start city</param>
-        /// <param name="destination">Destination city</param>
-        /// <param name="distance">Function which tells us the exact distance between two neighbours.</param>
-        /// <param name="estimate">Function which tells us the estimated distance between the last node on a proposed path and the
-        /// destination node.</param>
-        /// <returns></returns>
         static public AStar.Path<TNode> FindPath<TNode> (
             TNode start,
             TNode destination,
             Func<TNode, TNode, double> distance,
             Func<TNode, double> estimate) where TNode : AStar.IHasNeighbours<TNode>
         {
-            var closed = new HashSet<TNode> ();
-            
-            var queue = new AStar.PriorityQueue<double, Path<TNode>> ();
-            
+            var closed = new HashSet<TNode> ();            
+            var queue = new AStar.PriorityQueue<double, Path<TNode>> ();            
             queue.Enqueue (0, new AStar.Path<TNode> (start));
             
             while (!queue.IsEmpty) {
                 var path = queue.Dequeue ();
                 
-                if (closed.Contains (path.LastStep))
+                if (closed.Contains (path.LastStep)) {
                     continue;
+                }
+
+                if (path.LastStep != null) {
+                    if (path.LastStep.Equals (destination)) {
+                        return path;
+                    }
                 
-                if (path.LastStep.Equals (destination))
-                    return path;
+                    closed.Add (path.LastStep);
                 
-                closed.Add (path.LastStep);
-                
-                foreach (TNode n in path.LastStep.Neighbours) {
-                    double d = distance (path.LastStep, n);
-                    
-                    var newPath = path.AddStep (n, d);
-                    
-                    queue.Enqueue (newPath.TotalCost + estimate (n), newPath);
+                    foreach (TNode n in path.LastStep.Neighbours) {
+                        double d = distance (path.LastStep, n);                    
+                        var newPath = path.AddStep (n, d);                    
+                        queue.Enqueue (newPath.TotalCost + estimate (n), newPath);
+                    }
                 }
             }
             
             return null;
         }
-
-//      sealed partial class Node : AStar.IHasNeighbours<Node>
-//      {
-//          public IEnumerable<Node> Neighbours {
-//              get {
-//                  List<Node> nodes = new List<Node> ();
-//                  
-//                  foreach (AStar.EdgeToNeighbor etn in Neighbors) {
-//                      nodes.Add (etn.Neighbor);
-//                  }
-//                  
-//                  return nodes;
-//              }
-//          }
-//      }
     }
 }

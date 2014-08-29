@@ -63,6 +63,7 @@ namespace OpenSteerDotNet
                 y=fY;
                 z=fZ;
         }
+
         /*
         explicit Vector3( array<float>^ afCoordinate )
             : x( afCoordinate[0] ),
@@ -84,6 +85,7 @@ namespace OpenSteerDotNet
         {
         }
         */
+
         public Vector3( float scaler )
         {
                 x=scaler;
@@ -109,6 +111,7 @@ namespace OpenSteerDotNet
 			}
 		}
         */
+
 		public static bool operator == ( Vector3 lvec, Vector3 rvec )
         {
             return ( lvec.x == rvec.x && lvec.y == rvec.y && lvec.z == rvec.z );

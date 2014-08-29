@@ -59,6 +59,7 @@ namespace OpenSteerDotNet
         static int serialNumberCounter = 0;
 
         int serialNumber;
+        int GetSerialNumber() { return serialNumber; }
         // Constructor
 
         public SimpleVehicle()
@@ -355,13 +356,13 @@ namespace OpenSteerDotNet
 
         void annotationVelocityAcceleration (float maxLengthA,  float maxLengthV)
         {
-            float desat = 0.4f;
-            float aScale = maxLengthA / maxForce ();
-            float vScale = maxLengthV / maxSpeed ();
-            Vector3 p = Position;
-            Vector3 aColor = new Vector3(desat, desat, 1); // bluish
-            Vector3 vColor = new Vector3 (1, desat, 1); // pinkish
-
+//            float desat = 0.4f;
+//            float aScale = maxLengthA / maxForce ();
+//            float vScale = maxLengthV / maxSpeed ();
+//            Vector3 p = Position;
+//            Vector3 aColor = new Vector3(desat, desat, 1); // bluish
+//            Vector3 vColor = new Vector3 (1, desat, 1); // pinkish
+//
             //annotationLine (p, p + (velocity ()           * vScale), vColor);
             //annotationLine (p, p + (_smoothedAcceleration * aScale), aColor);
         }

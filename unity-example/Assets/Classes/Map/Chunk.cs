@@ -8,6 +8,10 @@ namespace ST
     /// A Chunk is used to improve rendering and decrease instantiation time.
     /// There are added complexities since the map is rendered in chunks and many operations are most 
     /// easily done on chunks, not individual tiles.   
+    /// 
+    /// TODO:
+    /// - do we need to implement some of the chunk code/methods for each type of map?
+    /// - can we move all map type specific calculations to the Map class, or the MapData class(es)
     /// </summary>
     public class Chunk : MonoBehaviour
     {
@@ -42,8 +46,6 @@ namespace ST
         public bool isDirty = false;
         private System.Random rnd;
 
-
-        // Use this for initialization
         void Start()
         {   
             // cache components
@@ -54,7 +56,7 @@ namespace ST
             if (this.tilesetFilename != null && tilesetFilename.Length > 2)
             {
                 // Load tileset
-                Debug.Log("trying to load tileset: " + tilesetFilename);
+                //Debug.Log("trying to load tileset: " + tilesetFilename);
                 this.tileset = new Tileset(map, tilesetFilename, tilePixelSize, tileBaseSize);
                 var renderer = GetComponent<MeshRenderer>(); 
                 var mat = renderer.materials[0];
@@ -107,6 +109,7 @@ namespace ST
         }
 
         // TODO: refactor out tx,ty,tz into meaningful vars
+        // TODO: should be in an Elevation Helper class
         Color32 getColorForTile(int tx, int ty, int tz, float h)
         {
             Color32 c = new Color32(0, 0, 0, 255);
@@ -154,79 +157,19 @@ namespace ST
         {
             if (tileid == 0) 
                 return;
-
-            // TODO: move to class property
-            float tileHeightStep = 0.6f;
-
+                       
             // get absolute tile coord
-            float mapTileX = tx + chunkX;
-            float mapTileY = ty + chunkY;
+            int mapTileX = tx + chunkX;
+            int mapTileY = ty + chunkY;
+            int mapTileZ = tz + chunkZ;
+
+            var mapTileCoord = new TileCoord(mapTileX, mapTileY, mapTileZ);
 
             // alt rows are horz offset by half width for staggered isometric map
             float xOffset = ((ty + chunkY) % 2 == 0) ? map.tUnitOffsets.x * 0.5f : 0f;
             float x = tx * map.tUnitOffsets.x + xOffset;
-
-            // rows are positioned at half-height grid since they overlap in vertical axis 
-            float y = ty * map.tUnitOffsets.y * 0.5f;
-        
-            if (map.relativeLayerHeight)
-            {
-                y += ((float)tileHeight * tileHeightStep * map.tUnitOffsets.y);           
-                // special case offsets depending on map layer (tz)
-                if (tz > 6)
-                {
-                    y += (tz - 6) * map.tUnitOffsets.y * 0.01f;
-                }
-                else
-                {
-                    y -= ((6 - tz) * map.tUnitOffsets.y * 0.2f + map.tUnitOffsets.y * 0.5f);
-                }
-            }
-            else
-            {
-                if (tz > 6)
-                {
-                    // at tileheight
-                    y += ((float)tileHeight * tileHeightStep * map.tUnitOffsets.y);
-                    y += (tz - 6) * map.tUnitOffsets.y * 0.01f;
-                }
-                else
-                {
-                    int segHeight = Mathf.Min(tz, tileHeight);         
-                    y += segHeight * map.tUnitOffsets.y * 0.5f;
-                }
-            }
-
-            // TODO: this is a hack, should either use a base tile with ground as top tz=6 tile
-            //       or otherwise make this generic to any tileset with 1 tile high base tiles and 
-            //       no height ground base floor tiles
-            // TODO: possibly have different tilesets for ground/floor and base under-ground/floor structure tiles 
-            if (tz <= 6)
-            {
-                if (map.relativeLayerHeight)
-                {
-                    y -= map.tUnitOffsets.y * 0.55f;
-                }
-                else
-                {
-                    y -= map.tUnitOffsets.y * 0.75f;
-                }
-
-            }
-
-            // real z is based on ordering tiles should form from top to bottom, right to left
-            float z = 50f + mapTileY + mapTileX / map.mapX - (tz + chunkZ) * 0.005f;
-            z *= 0.15f; // decrease/increase range of z values (careful about precision)
-
-            // special case offsets depending on map layer (tz)
-            if (tz > 6)
-            {
-                z -= (tz - 6) * 0.05f;
-            }
-            else
-            {
-                z += (7 - tz) * 0.02f;
-            }        
+            float y = this.map.TileYOffsetForHeight(mapTileCoord);
+            float z = this.map.TileScreenDepth(mapTileCoord);    
 
             // TODO: should refactor above or below into super or sub method
 
@@ -262,8 +205,8 @@ namespace ST
             newColors.Add(c);
             newColors.Add(c);
 
-            if ((chunkX + tx) == 0 && (chunkY + ty) == 0 && (chunkZ + tz) == 0)
-            {
+//            if ((chunkX + tx) == 0 && (chunkY + ty) == 0 && (chunkZ + tz) == 0)
+//            {
 //                Debug.Log("x = " + x);
 //                Debug.Log("y = " + y);
 //                Debug.Log("z = " + z);
@@ -271,7 +214,7 @@ namespace ST
 //                Debug.Log("h = " + h + " => " + c);
 //                Debug.Log("tileid = " + tileid);
 //                Debug.Log("txyz = " + tx + ", " + ty + ", " + tz);
-            }
+//            }
 
             quadCount++; // Add this line
         }
@@ -306,7 +249,6 @@ namespace ST
             quadCount = 0;
         }
 
-        // not using, could use in place of forced call to generateMesh in map class
         void LateUpdate()
         {
             if (isDirty)

@@ -3,18 +3,18 @@ using System.Collections;
 
 namespace ST
 {
-/// <summary>
-/// A Tileset is composed of a texture and information to parse tiles from it.
-/// There can be more than one tileset instance that references the same texture 
-/// if necessary for multiple different tile sizes.
-/// TODO: map/chunk rendering will need to handle this, it might already be taken 
-/// care of with valid
-/// </summary>
+    /// <summary>
+    /// A Tileset is composed of a texture and information to parse tiles from it.
+    /// There can be more than one tileset instance that references the same texture 
+    /// if necessary for multiple different tile sizes.
+    /// TODO: map/chunk rendering will need to handle this, it might already be taken 
+    /// care of with valid
+    /// </summary>
     public class Tileset
     {
-
+        // TODO: can we get rid of the dependency on Map, or else this should be simple interface into Map instead
         private Map map;
-        private string filename;
+        //private string filename;
         private Texture texture;
         private Vector2 texSize;
     
@@ -32,12 +32,12 @@ namespace ST
 
         // num tiles arranged in single row of texture
         private int tileCols;
-        static bool first = true;
+        //static bool first = true;
 
         public Tileset (Map map, string filename, Vector2 tilePixelSize, Vector2 tileCounts)
         {
             this.map = map;
-            this.filename = filename;
+            //this.filename = filename;
             this.tileTexSize = tilePixelSize;       
 
 //      // load texture from outside resource path? probably use HTTP/URL load with file:/// path
@@ -73,7 +73,6 @@ namespace ST
 //                first = false;
 //                Debug.Log("tileTexSize = " + tileTexSize.x + ", " + tileTexSize.y);
 //                Debug.Log("tileCols = " + tileCols);
-//
 //                Debug.Log("texSize = " + texSize.x + ", " + texSize.y);
 //                Debug.Log("uvTileSize = " + uvTileSize.x + ", " + uvTileSize.y);
 //                Debug.Log("tUnitSize = " + tUnitSize.x + ", " + tUnitSize.y);
@@ -107,6 +106,7 @@ namespace ST
 
         /// <summary>
         /// Gets the sprite rect based on the index where 0 is top left tile increasing to the right, then down
+        /// This is common for use with a map format like Tiled (http://mapeditor.org/)
         /// </summary>
         /// <returns>The sprite rect.</returns>
         /// <param name="index">Index.</param>

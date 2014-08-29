@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace ST
 {
@@ -19,7 +21,7 @@ namespace ST
     ///
     /// TODO: 
     /// - reintegrate Entity.cs with movement and placement on map with correct z-order based on previous test project(s)
-    /// - add "smooth" or "plateau" tool to modifyTerrain, change all neighbor tiles in radius to have same height as tile under mouse
+    /// x add "smooth" or "plateau" tool to modifyTerrain, change all neighbor tiles in radius to have same height as tile under mouse
     /// - create Game.cs class to implement large tower defense maps in iso/hex/orthogonal viewpoints
     /// - create Tile.cs to allow for sparse data and bitpacking of collision, seen, height, objects, etc
     /// - redefine the chunk system to support including the bottom layers in a single chunk
@@ -43,30 +45,39 @@ namespace ST
     /// https://dl.dropboxusercontent.com/u/168438/1gam/subterra/002/index.html
     /// - for selection, tool modes, cocos2d input handling
     /// </summary>
-    public class Map : MonoBehaviour
+    public abstract class Map : MonoBehaviour
     {
-        public GameObject chunk;
+        public GameObject chunkPrefab;
+        // TODO: should load without needing connection in Unity's editor
+        public GameObject entityPrefab;
         public Chunk[,,] chunks;
         public bool addFogOfWarRandomly = false;
         public bool relativeLayerHeight = false;
         public byte baseTileOpacity = 255;
         public int chunkSize = 16;
         public int maxTileHeight = 10;
+        public bool UseAstarPathfinding = false;
+        public bool UseSimple2Dastar = true;
 
         // TODO: 
-        // - should separate the data from the map generator/behavior
+        // ** should separate the data from the map generator/behavior/rendering **
         // - bytes should be useful in reducing memory, could have 4 tiles to a byte for FoW(seen)
         // - is bitpacking better than separating into Tile.cs class? where's the cross-over for efficiency
         // - what map sizes does this even matter, create table of map size and memory use
         //   (incl. layer count and percentage of tiles filled for each layer)
+        // - should separate concept of objects on tile with base layers
         public byte[,,] tileIds;
         public byte[,] tileHeights;
         public byte[,] tileSeen;
+        protected Dictionary<int,bool> tileColliders; // should likely be sparse
+        // TODO: need to implement hash, equals, and any other methods for custom key
+        //public Dictionary<TileCoord,bool> tileColliders;
 
         // number of map "tiles" in each axis (z refers to layers currently)
         public int mapX = 10;
         public int mapY = 10;
         public int mapZ = 1;
+
 
         // Calcs that shouldn't change, but are defined by the camera/gameObjects in Unity Editor / Project Settings
         // default unity is 100 points per unit (pixels on desktop, need to reference how unity handles retina displays)
@@ -75,11 +86,14 @@ namespace ST
         public float tUnit = 1f / 100f; 
         // size of boundingbox of tile's base for all tiles in map (standard 32x16)
         public Vector2 tileMapSize = new Vector2 (32, 16);
+        // the height between tile layers (or at least the base factor)
+        protected float tileHeightStep = 0.6f;
         // unity units for tile position
         public Vector2 tUnitOffsets;
-        private Entity testEntity;
+        protected Entity testEntity = null;
 
-        //
+
+        // TODO - Should check if Unity's Perlin noise methods are just as good
         int PerlinNoise (int x, int y, int z, float scale, float height, float power)
         {
             float rValue;
@@ -92,83 +106,37 @@ namespace ST
 
             return (int)rValue;
         }
+       
 
-        public byte Tile (int x, int y, int z)
-        {
+        // MARK - Tile Methods (should refactor into Tile.cs)
 
-            if (x >= mapX || x < 0 || y >= mapY || y < 0 || z >= mapZ || z < 0) {
-                return (byte)0;
-            }
-            return tileIds [x, y, z];
-        }
+        public abstract bool IsTileValid (TileCoord tile);
 
-        public byte TileHeight (int x, int y)
-        {
+        public abstract bool IsTileValid (int x, int y, int z);
 
-            if (x >= mapX || x < 0 || y >= mapY || y < 0) {
-                return (byte)0;
-            }
-            return tileHeights [x, y];
-        }
+        public abstract byte Tile (int x, int y, int z);
 
-        public byte TileSeen (int x, int y)
-        {
-        
-            if (x >= mapX || x < 0 || y >= mapY || y < 0) {
-                return 0;
-            }
-            return tileSeen [x, y];
-        }
+        public abstract byte TileHeight (int x, int y);
 
-        /// <summary>
-        /// Get tile coordinate from world coordinates.
-        /// Should effectively be reverse coordinate calculations for positioning each tile in the world      
-        /// </summary>
-        /// <returns>The from world.</returns>
-        /// <param name="world">World.</param>
-        public TileCoord tileFromWorld (Vector3 world)
-        {
-            
-            // WHEN CREATING CHUNK (for reference)
-            // float px = x * chunkSize * tileMapSize.x * tUnit - 0.5f;
-            // float py = y * chunkSize * tileMapSize.y * tUnit * 0.5f;
-            
-            
-            // TODO: cache this data
-            // This should be zeroed, but it could change eventually? camera should move, not map
-            //var worldOffset = new Vector3(0,0,0);
-            
-            // where in chunk?
-            var tileSize = this.tileMapSize;
-//            var chunkSize = this.chunkSize;
+        public abstract byte TileSeen (int x, int y);
 
-            int chunkR = Mathf.RoundToInt (world.y / (tileSize.y * this.tUnit * 0.5f));
-            int chunkC = Mathf.RoundToInt (world.x / (tileSize.x * this.tUnit));
-//            int tileR = Mathf.RoundToInt(world.y - (chunkR * chunkWorldSize.y));
-//            int tileC = Mathf.RoundToInt(world.x - (chunkC * chunkWorldSize.x));
-//            int r = chunkR;// * chunkSize + tileR;
-//            int c = chunkC;// * chunkSize + tileC;
-//            return new TileCoord(c, r);
-            if (chunkC < 0 || chunkR < 0 || chunkC >= tileIds.GetLength (0) || chunkR >= tileIds.GetLength (1)) {
-                return null;
-            }
-            return new TileCoord (chunkC, chunkR);
-        }
+        // TODO: move collisions into tile data
+        public abstract bool TileIsCollision (TileCoord tile);
 
-        /// <summary>
-        /// TODO:
-        /// - check this, it was a quick addition for Entity, likely incorrect/buggy
-        /// </summary>
-        public Vector3 worldFromTile (TileCoord tile)
-        {
-            float px = tile.c * chunkSize * tileMapSize.x * tUnit - 0.5f;
-            float py = tile.r * chunkSize * tileMapSize.y * tUnit * 0.5f;
-            float pz = 0f;
+        public abstract void SetTileColor (TileCoord tile, Color c);
 
-            return new Vector3(px, py, pz);
-        }   
+        // TODO: decide if rename to TileZDepth, TileVertexZ, or other makes more sense
+        public abstract float TileScreenDepth (TileCoord tile);
 
-    
+        public abstract float TileYOffsetForHeight(TileCoord tile);
+
+        // MARK ------------------------------------------------------
+
+        public abstract TileCoord tileFromWorld (Vector3 world);
+
+        public abstract Vector3 worldFromTile (TileCoord tile);
+
+        // MARK ------------------------------------------------------
 
         /// <summary>
         /// Enter's scene
@@ -181,6 +149,7 @@ namespace ST
             tileIds = new byte[mapX, mapY, mapZ];
             tileHeights = new byte[mapX, mapY];
             tileSeen = new byte[mapX, mapY];
+            tileColliders = new Dictionary<int, bool>();
 
             var rnd = new System.Random ();
             float h = (float)this.maxTileHeight;
@@ -240,7 +209,7 @@ namespace ST
                         float px = x * chunkSize * tileMapSize.x * tUnit - 0.5f;
                         float py = y * chunkSize * tileMapSize.y * tUnit * 0.5f;
                         float pz = 0.0f;
-                        GameObject newChunk = Instantiate (chunk, new Vector3 (px, py, pz), new Quaternion (0, 0, 0, 0)) as GameObject;
+                        GameObject newChunk = Instantiate (chunkPrefab, new Vector3 (px, py, pz), new Quaternion (0, 0, 0, 0)) as GameObject;
 
                         // We are currently using this map object as the parent to collect all the chunks in the editor hierarchy
                         newChunk.transform.parent = this.gameObject.transform;
@@ -258,9 +227,14 @@ namespace ST
                 }
             }
 
-            testEntity = new Entity (this);
-            testEntity.setTile (new TileCoord(5,5));
+            var entityGO = GameObject.Instantiate(entityPrefab, new Vector3 (0,0,0), new Quaternion (0, 0, 0, 0)) as GameObject;
+            this.testEntity = new Entity (this);
+            this.testEntity.EntityStart(entityGO);
+            this.testEntity.setGoalTile(new TileCoord(14,25,0));
+        }
 
+        void Update() {
+            testEntity.EntityUpdate();
         }
     }
 }

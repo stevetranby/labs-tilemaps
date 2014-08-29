@@ -40,6 +40,13 @@ namespace ST
     /// [.... map ......]
     /// Far Z
     ///
+    /// 
+    /// ## Lighting ##
+    /// - shadows are part of lighting and may use the same or similar implmentations
+    /// 
+    /// # References
+    /// http://forums.tigsource.com/index.php?topic=8803.0
+    /// 
     /// </summary>
     public class FogOfWar
     {   
