@@ -5,6 +5,7 @@ namespace ST
 {
     public class IsometricMap : Map
     {
+
         // MARK - Tile Methods (should refactor into Tile.cs)
         
         public override bool IsTileValid (TileCoord tile)
@@ -45,106 +46,78 @@ namespace ST
         {
         }
 
+		public byte TileCost (TileCoord tile)
+		{
+			const byte MAX_TILE_COST = 255;
+			return MAX_TILE_COST;
+		}
+
         // TODO: move collisions into tile data
-        public override bool TileIsCollision (TileCoord tile)
+		public override bool TileIsCollision (TileCoord tile)
         {
-            if (IsTileValid (tile)) {
-                // cache these for easier reference
-                int cols = tileIds.GetLength (0);
-                int rows = tileIds.GetLength (1);
-                int layerArea = cols * rows;
-                int tileMapIndex = tile.h * (layerArea) + tile.r * rows + tile.c;
-                bool isWall = tileColliders [tileMapIndex];
-                return isWall;
-            }
             return true;
         }
         
         // TODO: decide if rename to TileZDepth, TileVertexZ, or other makes more sense
         public override float TileScreenDepth (TileCoord tile)
         {
-            // TODO: implement in concreate class
-            // REMOVE: isometric staggered for now
-            // real z is based on ordering tiles should form from top to bottom, right to left
-            float z = 50f + tile.r + tile.c / this.mapX - (tile.h) * 0.005f;
-            z *= 0.15f; // decrease/increase range of z values (careful about precision)
-            
-            // special case offsets depending on map layer (tz)
-            if (tile.h > 6)
-            {
-                z -= (tile.h - 6) * 0.05f;
-            }
-            else
-            {
-                z += (7 - tile.h) * 0.02f;
-            }    
-            return z;
+            return 0f;
         }
         
         public override float TileYOffsetForHeight(TileCoord tile)
         {
-            // TODO: implement in concreate class
-            // REMOVE: isometric staggered for now
-            // rows are positioned at half-height grid since they overlap in vertical axis 
-            byte tileHeight = TileHeight(tile.c, tile.r);
-            int ty = tile.r % chunkSize;
-            float y = (float)ty * this.tUnitOffsets.y * 0.5f;
-            
-            if (this.relativeLayerHeight)
-            {
-                y += ((float)tileHeight * tileHeightStep * this.tUnitOffsets.y);           
-                // special case offsets depending on map layer (tz)
-                if (tile.h > 6)
-                {
-                    y += (tile.h - 6) * this.tUnitOffsets.y * 0.01f;
-                }
-                else
-                {
-                    y -= ((6 - tile.h) * this.tUnitOffsets.y * 0.2f + this.tUnitOffsets.y * 0.5f);
-                }
-            }
-            else
-            {
-                if (tile.h > 6)
-                {
-                    // at tileheight
-                    y += ((float)tileHeight * tileHeightStep * this.tUnitOffsets.y);
-                    y += (tile.h - 6) * this.tUnitOffsets.y * 0.01f;
-                }
-                else
-                {
-                    int segHeight = Mathf.Min(tile.h, tileHeight);         
-                    y += segHeight * this.tUnitOffsets.y * 0.5f;
-                }
-            }
-            
-            // TODO: this is a hack, should either use a base tile with ground as top tz=6 tile
-            //       or otherwise make this generic to any tileset with 1 tile high base tiles and 
-            //       no height ground base floor tiles
-            // TODO: possibly have different tilesets for ground/floor and base under-ground/floor structure tiles 
-            if (tile.h <= 6)
-            {
-                if (this.relativeLayerHeight)
-                {
-                    y -= this.tUnitOffsets.y * 0.55f;
-                }
-                else
-                {
-                    y -= this.tUnitOffsets.y * 0.75f;
-                }
-                
-            }
-            return y;
+            return 0f;
         }
 
         public override TileCoord tileFromWorld (Vector3 world)
         {
+//			var ret = cc.PointZero();
+//				
+//				pos = cc.POINT_PIXELS_TO_POINTS( pos );
+//				
+//				var tw = mapLayer.getMapTileSize().width;
+//				var th = mapLayer.getMapTileSize().height;
+//				var mw = mapLayer.getLayerSize().width;
+//				var mh = mapLayer.getLayerSize().height;
+//				
+//				var x = pos.x;
+//				var y = pos.y;
+//				
+//				var isox = Math.floor(mh - y/th + x/tw - mw/2);// - 1/2),
+//				var isoy = Math.floor(mh - y/th - x/tw + mw/2 + 1/2); // - 3/2)
+//				
+//				ret = cc.p(isox, isoy);
+			
             return new TileCoord(0,0,0);
         }
         
         public override Vector3 worldFromTile (TileCoord tile)
         {
+//            var zOrder = (r + c) >> 0;
+//            var x = tw * this.cols / 2 + ((c - r) * tw / 2);
+//            var y = th * this.rows - ((c + r) * th / 2);
+//            var z = tileInfo.height;
+
             return new Vector3(0,0,0);
+        }
+
+        public void SetupDefaultMap()
+        {
+            // NOTE: "chunks" or the mesh could be for each row of the map
+//            var tileRowNode = this.isoLayer.getChildByTag(100 + zOrder);
+//            if (!tileRowNode) {
+//                tileRowNode = cc.DrawNode.create();
+//                tileRowNode.setPosition(cc.p(0, y));
+//                this.isoLayer.addChild(tileRowNode, zOrder, 100 + zOrder);
+//            }
+        }
+
+        public void RotateMapCW() 
+        {
+        }
+
+        public void RotateMapCCW() 
+        {
         }
     }
 }

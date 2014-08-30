@@ -93,6 +93,21 @@ namespace ST
         protected Entity testEntity = null;
 
 
+		// --------------------------------------------------------------------------------
+		// Do we want actual layers, this should probably be named dictionary to make generic
+		struct MapLayer {}
+		List<MapLayer> layers;
+		// var layers {
+		//	layerBase: null,
+		//	layerEntities: null,
+		//	layerTerritories: null,
+		//	layerFog: null,
+		//	layerGrid: null,
+		// };
+
+
+		// --------------------------------------------------------------------------------
+
         // TODO - Should check if Unity's Perlin noise methods are just as good
         int PerlinNoise (int x, int y, int z, float scale, float height, float power)
         {

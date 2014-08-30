@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ST
 {
@@ -7,8 +8,14 @@ namespace ST
     /// A Tileset is composed of a texture and information to parse tiles from it.
     /// There can be more than one tileset instance that references the same texture 
     /// if necessary for multiple different tile sizes.
-    /// TODO: map/chunk rendering will need to handle this, it might already be taken 
-    /// care of with valid
+    /// TODO: 
+	/// - map/chunk rendering will need to handle this
+	///   it might already be taken care of with valid
+	/// - Texture Source: 
+	///   [x] single image
+	///   [ ] multiple images
+	///   [ ] Unity sprite(s)
+	///   [ ] texture atlas from TexturePacker or 3rd party config+image
     /// </summary>
     public class Tileset
     {
@@ -33,6 +40,10 @@ namespace ST
         // num tiles arranged in single row of texture
         private int tileCols;
         //static bool first = true;
+
+		// TODO: rename? 
+		// This is the second method for rendering tiles, single texture images
+		private Dictionary<string,Texture2D> texturesByName;
 
         public Tileset (Map map, string filename, Vector2 tilePixelSize, Vector2 tileCounts)
         {
