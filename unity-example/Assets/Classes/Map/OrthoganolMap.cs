@@ -5,7 +5,7 @@ namespace ST
 {
     public class OrthoganolMap : Map
     {
-        public override bool IsTileValid (TileCoord tile) 
+        public override bool IsTileValid (TileCoord tile)
         {
             return false;
         }
@@ -47,19 +47,25 @@ namespace ST
             return 0f;
         }
 
-        public override float TileYOffsetForHeight(TileCoord tile)
+        public override float TileYOffsetForHeight (TileCoord tile)
         {
             return 0f;
         }
         
         public override TileCoord tileFromWorld (Vector3 world)
         {
-            return new TileCoord(0,0,0);
+            return new TileCoord (0, 0, 0);
         }
         
         public override Vector3 worldFromTile (TileCoord tile)
         {
-            return new Vector3(0,0,0);
+            return new Vector3 (0, 0, 0);
         }
+        
+        public override Vector3 vectorForDirection (Direction dir)
+        {           
+            return new Vector3 (0, 0, 0);
+        }
+
     }
 }

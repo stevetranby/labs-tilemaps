@@ -93,20 +93,27 @@ namespace ST
         protected Entity testEntity = null;
 
 
-		// --------------------------------------------------------------------------------
-		// Do we want actual layers, this should probably be named dictionary to make generic
-		struct MapLayer {}
-		List<MapLayer> layers;
-		// var layers {
-		//	layerBase: null,
-		//	layerEntities: null,
-		//	layerTerritories: null,
-		//	layerFog: null,
-		//	layerGrid: null,
-		// };
+        // --------------------------------------------------------------------------------             
+        
+        // Map specific, movement direction for a given direction on a specific map type
+        public abstract Vector3 vectorForDirection (Direction dir);
+
+        // --------------------------------------------------------------------------------
+        // Do we want actual layers, this should probably be named dictionary to make generic
+        struct MapLayer
+        {
+        }
+        List<MapLayer> layers;
+        // var layers {
+        //  layerBase: null,
+        //  layerEntities: null,
+        //  layerTerritories: null,
+        //  layerFog: null,
+        //  layerGrid: null,
+        // };
 
 
-		// --------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------
 
         // TODO - Should check if Unity's Perlin noise methods are just as good
         int PerlinNoise (int x, int y, int z, float scale, float height, float power)
@@ -143,7 +150,7 @@ namespace ST
         // TODO: decide if rename to TileZDepth, TileVertexZ, or other makes more sense
         public abstract float TileScreenDepth (TileCoord tile);
 
-        public abstract float TileYOffsetForHeight(TileCoord tile);
+        public abstract float TileYOffsetForHeight (TileCoord tile);
 
         // MARK ------------------------------------------------------
 
@@ -164,7 +171,7 @@ namespace ST
             tileIds = new byte[mapX, mapY, mapZ];
             tileHeights = new byte[mapX, mapY];
             tileSeen = new byte[mapX, mapY];
-            tileColliders = new Dictionary<int, bool>();
+            tileColliders = new Dictionary<int, bool> ();
 
             var rnd = new System.Random ();
             float h = (float)this.maxTileHeight;
@@ -242,14 +249,15 @@ namespace ST
                 }
             }
 
-            var entityGO = GameObject.Instantiate(entityPrefab, new Vector3 (0,0,0), new Quaternion (0, 0, 0, 0)) as GameObject;
+            var entityGO = GameObject.Instantiate (entityPrefab, new Vector3 (0, 0, 0), new Quaternion (0, 0, 0, 0)) as GameObject;
             this.testEntity = new Entity (this);
-            this.testEntity.EntityStart(entityGO);
-            this.testEntity.setGoalTile(new TileCoord(14,25,0));
+            this.testEntity.EntityStart (entityGO);
+            this.testEntity.setGoalTile (new TileCoord (14, 25, 0));
         }
 
-        void Update() {
-            testEntity.EntityUpdate();
+        void Update ()
+        {
+            testEntity.EntityUpdate ();
         }
     }
 }

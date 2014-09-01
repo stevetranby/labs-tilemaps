@@ -46,14 +46,14 @@ namespace ST
         {
         }
 
-		public byte TileCost (TileCoord tile)
-		{
-			const byte MAX_TILE_COST = 255;
-			return MAX_TILE_COST;
-		}
+        public byte TileCost (TileCoord tile)
+        {
+            const byte MAX_TILE_COST = 255;
+            return MAX_TILE_COST;
+        }
 
         // TODO: move collisions into tile data
-		public override bool TileIsCollision (TileCoord tile)
+        public override bool TileIsCollision (TileCoord tile)
         {
             return true;
         }
@@ -64,31 +64,31 @@ namespace ST
             return 0f;
         }
         
-        public override float TileYOffsetForHeight(TileCoord tile)
+        public override float TileYOffsetForHeight (TileCoord tile)
         {
             return 0f;
         }
 
         public override TileCoord tileFromWorld (Vector3 world)
         {
-//			var ret = cc.PointZero();
-//				
-//				pos = cc.POINT_PIXELS_TO_POINTS( pos );
-//				
-//				var tw = mapLayer.getMapTileSize().width;
-//				var th = mapLayer.getMapTileSize().height;
-//				var mw = mapLayer.getLayerSize().width;
-//				var mh = mapLayer.getLayerSize().height;
-//				
-//				var x = pos.x;
-//				var y = pos.y;
-//				
-//				var isox = Math.floor(mh - y/th + x/tw - mw/2);// - 1/2),
-//				var isoy = Math.floor(mh - y/th - x/tw + mw/2 + 1/2); // - 3/2)
-//				
-//				ret = cc.p(isox, isoy);
-			
-            return new TileCoord(0,0,0);
+//          var ret = cc.PointZero();
+//              
+//              pos = cc.POINT_PIXELS_TO_POINTS( pos );
+//              
+//              var tw = mapLayer.getMapTileSize().width;
+//              var th = mapLayer.getMapTileSize().height;
+//              var mw = mapLayer.getLayerSize().width;
+//              var mh = mapLayer.getLayerSize().height;
+//              
+//              var x = pos.x;
+//              var y = pos.y;
+//              
+//              var isox = Math.floor(mh - y/th + x/tw - mw/2);// - 1/2),
+//              var isoy = Math.floor(mh - y/th - x/tw + mw/2 + 1/2); // - 3/2)
+//              
+//              ret = cc.p(isox, isoy);
+            
+            return new TileCoord (0, 0, 0);
         }
         
         public override Vector3 worldFromTile (TileCoord tile)
@@ -98,10 +98,15 @@ namespace ST
 //            var y = th * this.rows - ((c + r) * th / 2);
 //            var z = tileInfo.height;
 
-            return new Vector3(0,0,0);
+            return new Vector3 (0, 0, 0);
+        }
+        
+        public override Vector3 vectorForDirection (Direction dir)
+        {           
+            return new Vector3 (0, 0, 0);
         }
 
-        public void SetupDefaultMap()
+        public void SetupDefaultMap ()
         {
             // NOTE: "chunks" or the mesh could be for each row of the map
 //            var tileRowNode = this.isoLayer.getChildByTag(100 + zOrder);
@@ -112,11 +117,11 @@ namespace ST
 //            }
         }
 
-        public void RotateMapCW() 
+        public void RotateMapCW ()
         {
         }
 
-        public void RotateMapCCW() 
+        public void RotateMapCCW ()
         {
         }
     }

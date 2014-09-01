@@ -68,6 +68,8 @@ namespace ST
 		public Dictionary<InputAction, KeyCode> keymap;
 		public Dictionary<InputAction, Action<bool>> keymapBehavior;
 
+        private Vector3 prevMousePosition;
+
         //
         void SetupDefaultKeymap ()
         {
@@ -96,6 +98,57 @@ namespace ST
         void Update ()
         {
 			// check for keys, take action if behavior exists
+        }
+
+        /// <summary>
+        /// Template for notes on reacting to directional control input for movement.
+        /// 4 or 8 directions - DPAD, WASD, Arrows, Analog Sticks clamped 
+        /// 2-Axis - one axis for rotation, other for movement
+        /// 2-Axis Weapon - one axis for movement, other for rotational aiming of weapon
+        /// </summary>
+        void CheckInputDirectionalMovement()
+        {
+            float dx = Input.GetAxis("Horizontal");
+            float dy = Input.GetAxis("Vertical");            
+            Vector2 heading = new Vector2(dx, dy);
+            heading.Normalize();
+                      
+            // Using standard, simple, or custom character controller
+            //characterController.Move(heading);
+        }
+
+        void CheckInputMouseMovement()
+        {
+            // TODO: make sure either tUnits works instead or definitely calulate based on device screen size and of course fps or deltatime
+            //float scalerX = 100f / Screen.width;
+            float dx = Input.mousePosition.x - prevMousePosition.x;
+            float dy = Input.mousePosition.y - prevMousePosition.y;
+        }
+
+        /// <summary>
+        /// Template for notes on reacting to touch input for movement.
+        /// Tracking movement by moving toward touch based on vector between touch and active player character or unit
+        /// </summary>
+        void CheckInputTouchMovement()
+        {
+            //check for touches
+            if (Input.touchCount > 0)
+            {
+                // TODO: get main camera
+                Camera camera = null;
+                Vector2 touchPosition = Input.GetTouch(0).position;
+                Vector3 touchWorldPosition = camera.ScreenToWorldPoint(new Vector3(touchPosition.x, touchPosition.y, 15));
+
+                // TODO: need access to currently active/selected character (player, unit, entity, controllable NPC, etc)
+                GameObject currentCharacterGO = null;
+                Vector3 characterPosition = currentCharacterGO.transform.position;
+
+                //vector math says point to get to - current position = heading.
+                float dx = touchWorldPosition.x - characterPosition.x;
+                float dy = touchWorldPosition.y - characterPosition.y;
+                Vector2 heading = new Vector2(dx, dy);
+                heading.Normalize();
+            }
         }
     }
    

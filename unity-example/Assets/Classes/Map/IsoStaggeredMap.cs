@@ -57,7 +57,7 @@ namespace ST
                 int tileMapIndex = tile.h * (layerArea) + tile.r * rows + tile.c;
 
                 bool isWall = false;
-                tileColliders.TryGetValue(tileMapIndex, out isWall);
+                tileColliders.TryGetValue (tileMapIndex, out isWall);
                 return isWall;
             }
             return true;
@@ -122,6 +122,21 @@ namespace ST
             
             }
             return y;
+        }
+
+        public override Vector3 vectorForDirection (Direction dir)
+        {
+            switch (dir) {
+            case Direction.NorthEast:
+                return new Vector3 (1f, 0.5f);
+            case Direction.NorthWest:
+                return new Vector3 (-1f, 0.5f);
+            case Direction.SouthEast:
+                return new Vector3 (1f, -0.5f);
+            case Direction.SouthWest:
+                return new Vector3 (-1f, 0.5f);
+            }
+            return new Vector3 (0, 0, 0);
         }
 
         // MARK ------------------------------------------------------

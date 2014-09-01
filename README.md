@@ -82,3 +82,6 @@ Mini Maps Examples
 - http://www.wsgf.org/f/u/imagecache/node-gallery-display/contrib/dr/119/ingame_16x9.jpg
 - http://cdn3.raywenderlich.com/wp-content/uploads/2013/02/tilegame_minimap.png
 - http://www.sfml-dev.org/tutorials/2.0/images/graphics-view-minimap.png
+
+Visibility Culling for Minecraft Caves
+https://tomcc.github.io/2014/08/31/visibility-1.html

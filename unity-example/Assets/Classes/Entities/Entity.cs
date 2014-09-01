@@ -20,14 +20,52 @@ namespace ST
     /// - might want to refactor to use the new Tileset instead of gameobject
     /// - add path smoothing after receiving set of waypoints from A*
     /// - test navmash navigation with steering behaviors snapping to 4-dir vectors
+    /// 
+    /// MonoBehavior
+    /// - do we need this to derive from MonoBehavior
+    /// - if not can we have its gameObject be the link into the Unity component system
+    /// - if we use RequireComponent we'll want each component to be MonoBehavior.
+    /// - might be necessary "evil" (possibly not even evil) to require most class support the MonoBehavior functionality 
     /// </summary>
-    public class Entity
+    /// 
+
+//    // Require components that are necessary for all entities
+//    // - any component like AIComponent can be checked for null instead if desired
+//    [RequireComponent(typeof(HealthComponentScript))]
+//    [RequireComponent(typeof(MoveComponentScript))]
+//    [RequireComponent(typeof(AIComponentScript))]
+//    [RequireComponent(typeof(Animator))]
+    public class Entity : MonoBehaviour
     {
+        // Move state determine simplistic behavior for Enemies, NPCs, or Non-Direct-Controlled Player Units, or in "auto" mode
+        public enum EntityBehaviorState
+        {
+            Searching, 
+            Seeking,   
+            Evading,
+            Patrolling,
+            Following,
+            Idling
+        }
+        
+        public enum EntityState
+        {
+            Spawning,
+            Alive,
+            Invincible,
+            Dying,
+            Dead
+        }
+
+
         // public for A* unity plugin
         public TileCoord curTile;
 
         // dependencies
         private Map map;
+
+        // state
+        private EntityState entityState;
 
         // rendering
         private Tileset tileset;
@@ -35,20 +73,39 @@ namespace ST
         private GameObject gameObject;
         private Animator anim;
         private string animPrefix = "[entity_type_name]";
+        private float feetOffset = 0f;
+        private float zOffset = -0.75f;
 
         // movement
+        // TODO: move into MoveComponent
         private Vector2 basePos;
         private List<TileCoord> waypoints;
         private TileCoord curWaypoint;
         private TileCoord goalTile;
         private Direction curDir;
-
-        // feet location offset
-        private float feetOffset = 0f;
         private float speed = 0f;
         private float speedMax = 0f;
-        private float zOffset = -0.75f;
-               
+
+        // Entity Components
+        private AIComponent cachedAIComponent;
+        private InputComponent cachedInputComponent; // direct player character input
+        private JobsComponent cachedJobsComponent;
+        private StatsComponent cachedStatsComponent;
+        //TODO: remove this if not smart, may use List<Units> or UnitManager instead
+        //private UnitsComponent cachedUnitsComponent; // entity is a collection of units, or entity controls units
+
+        // Unity Components
+        private Animator cachedAnimator;
+        private Transform cachedTransform;
+        private Rigidbody2D cachedRigidBody2D;
+
+        // Allow for different behavior for different entity
+        private Func<bool> onDead;
+        private Func<bool> onAction;
+        private Func<bool> onPlaySound; 
+
+        // ---------------------------------------------------------------            
+
         // Should be in highest level class, say Game.cs, where each game's "global" data is stored, don't use singletons if can be helped 
         private static int curGuid = 0;
         private int guid;
@@ -62,6 +119,9 @@ namespace ST
         {
             return this.guid;
         }
+
+
+        // ---------------------------------------------------------------
 
         public Entity (Map m)
         {
@@ -84,29 +144,14 @@ namespace ST
             anim = go.GetComponent<Animator> ();
         }
 
-        public enum Direction
+        // TODO: should allow for different death actions
+        public void onDeath ()
         {
-            None,
-            NorthEast,
-            NorthWest,
-            SouthEast,
-            SouthWest,
-        }
+            this.entityState = EntityState.Dying;
 
-        // TODO: need to get from Map to support all types
-        public Vector3 vectorForDirection (Direction dir)
-        {
-            switch (dir) {
-            case Direction.NorthEast:
-                return new Vector3 (1f, 0.5f);
-            case Direction.NorthWest:
-                return new Vector3 (-1f, 0.5f);
-            case Direction.SouthEast:
-                return new Vector3 (1f, -0.5f);
-            case Direction.SouthWest:
-                return new Vector3 (-1f, 0.5f);
+            if (this.onDead != null) {
+                this.onDead ();
             }
-            return new Vector3 (0, 0, 0);
         }
 
         // TODO: reimplement with new Map and Tile classes
@@ -180,7 +225,7 @@ namespace ST
             Vector2 curPos = basePos;
 
             if (null != curWaypoint || null != goalTile) {
-                Debug.Log("trying to get next waypoint " + UnityEngine.Time.time);
+                Debug.Log ("trying to get next waypoint " + UnityEngine.Time.time);
                 TileCoord nextTile = curWaypoint != null ? curWaypoint : goalTile != null ? goalTile : null;
                 if (null != nextTile) {
                     Vector3 pos3 = map.worldFromTile (nextTile);                   
@@ -322,7 +367,7 @@ namespace ST
                 curDir = dr < 0 ? Direction.SouthWest : Direction.NorthEast;
                 waypoints.Add (new TileCoord (curTile.c, goalTile.r, -1));
             }
-            Debug.Log("dc = " + dc + ", dr = " + dr + ", # waypoint = " + waypoints.Count());
+            Debug.Log ("dc = " + dc + ", dr = " + dr + ", # waypoint = " + waypoints.Count ());
         }
 
         public void setGoalTile (TileCoord coord)
