@@ -9,13 +9,13 @@ namespace ST
     /// There can be more than one tileset instance that references the same texture 
     /// if necessary for multiple different tile sizes.
     /// TODO: 
-	/// - map/chunk rendering will need to handle this
-	///   it might already be taken care of with valid
-	/// - Texture Source: 
-	///   [x] single image
-	///   [ ] multiple images
-	///   [ ] Unity sprite(s)
-	///   [ ] texture atlas from TexturePacker or 3rd party config+image
+    /// - map/chunk rendering will need to handle this
+    ///   it might already be taken care of with valid
+    /// - Texture Source: 
+    ///   [x] single image
+    ///   [ ] multiple images
+    ///   [ ] Unity sprite(s)
+    ///   [ ] texture atlas from TexturePacker or 3rd party config+image
     /// </summary>
     public class Tileset
     {
@@ -41,9 +41,9 @@ namespace ST
         private int tileCols;
         //static bool first = true;
 
-		// TODO: rename? 
-		// This is the second method for rendering tiles, single texture images
-		private Dictionary<string,Texture2D> texturesByName;
+        // TODO: rename? 
+        // This is the second method for rendering tiles, single texture images
+        private Dictionary<string,Texture2D> texturesByName;
 
         public Tileset (Map map, string filename, Vector2 tilePixelSize, Vector2 tileCounts)
         {
@@ -53,13 +53,14 @@ namespace ST
 
 //      // load texture from outside resource path? probably use HTTP/URL load with file:/// path
 //        // http://docs.unity3d.com/ScriptReference/Application-dataPath.html
-//        var pathSeparator = System.IO.Path.DirectorySeparatorChar;
+            var pathSeparator = System.IO.Path.DirectorySeparatorChar;
 //        var tilesetDir = Application.dataPath + pathSeparator + ".." + pathSeparator + "Resources";
 //        var filepath = tilesetDir + pathSeparator + this.filename;      
 //        Debug.Log("filepath = " + filepath);
                     
-            this.texture = UnityEngine.Resources.Load<Texture2D> ("terrain_1");            
-//            Debug.Log("texture = " + texture);
+            this.texture = UnityEngine.Resources.Load<Texture2D> ("IsoTiles" + pathSeparator + "terrain_1");            
+            //this.texture = UnityEngine.Resources.Load<Texture2D> ("terrain_1");            
+            Debug.Log ("texture = " + this.texture);
 
             SetupTexture ();
         }

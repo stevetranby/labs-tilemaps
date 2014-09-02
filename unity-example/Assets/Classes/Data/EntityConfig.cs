@@ -1,21 +1,31 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace ST
 {
-    public class EntityConfig : MonoBehaviour
+    /// <summary>
+    /// Entity config to parse and spawn a given type of entity.
+    /// </summary>
+    //[UnityEngine.Serialization]
+    public class EntityConfig
     {
+        public class WeaponConfig
+        {
+            public enum WeaponType {
+                Magic,
+                Melee,
+                Projectile
+            }
 
-        // Use this for initialization
-        void Start ()
-        {
-    
+            public string name;
+            public WeaponType type;
         }
-    
-        // Update is called once per frame
-        void Update ()
-        {
-    
-        }
+
+        public int entityHash;
+        public string name;
+        public int attack;
+        public int defense;
+        public WeaponConfig weaponConfig;
+
     }
 }

@@ -10,10 +10,10 @@ namespace AStar
 {
     class AStar
     {
-        static void Main(string[] args)
-        {
-            do
-            {
+//        static void Main(string[] args)
+//        {
+//            do
+//            {
 //                // Creating the Graph...
 //                Graph graph = new Graph();
 //			
@@ -58,76 +58,76 @@ namespace AStar
 //                }
 //
 //                Console.Write("\nDo you wanna try A* Search again? Yes or No? ");
-            }
-            while(Console.ReadLine().ToLower() == "yes");
-        }
+//            }
+//            while(Console.ReadLine().ToLower() == "yes");
+//        }
+//
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        /// <param name="graph"></param>
+//        private static void FillGraphWithGridMap(Graph graph)
+//        {
+//			// for r,c create tile nodes
+//			//graph.AddNode("tile_r_c", null, 68, -61);
+//
+//            // Edges
+//			// for r,c create edges to <= 4 neighbors
+//			// cost is 1 unless cliff or whatever, maybe use height differential
+//			graph.AddUndirectedEdge("tile_1_1", "tile_0_1", 1);
+//			graph.AddUndirectedEdge("tile_1_1", "tile_2_1", 1);
+//			graph.AddUndirectedEdge("tile_1_1", "tile_1_0", 1);
+//			graph.AddUndirectedEdge("tile_1_1", "tile_1_2", 1);
+//		}
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="graph"></param>
-        private static void FillGraphWithGridMap(Graph graph)
-        {
-			// for r,c create tile nodes
-			graph.AddNode("tile_r_c", null, 68, -61);
-
-            // Edges
-			// for r,c create edges to <= 4 neighbors
-			// cost is 1 unless cliff or whatever, maybe use height differential
-			graph.AddUndirectedEdge("tile_1_1", "tile_0_1", 1);
-			graph.AddUndirectedEdge("tile_1_1", "tile_2_1", 1);
-			graph.AddUndirectedEdge("tile_1_1", "tile_1_0", 1);
-			graph.AddUndirectedEdge("tile_1_1", "tile_1_2", 1);
-		}
-
-
-        /// <summary>
-        /// This is the method responsible for finding the shortest path between a Start and Destination cities using the A*
-        /// search algorithm.
-        /// </summary>
-        /// <typeparam name="TNode">The Node type</typeparam>
-        /// <param name="start">Start city</param>
-        /// <param name="destination">Destination city</param>
-        /// <param name="distance">Function which tells us the exact distance between two neighbours.</param>
-        /// <param name="estimate">Function which tells us the estimated distance between the last node on a proposed path and the
-        /// destination node.</param>
-        /// <returns></returns>
-        static public Path<TNode> FindPath<TNode>(
-            TNode start,
-            TNode destination,
-            Func<TNode, TNode, double> distance,
-            Func<TNode, double> estimate) where TNode : IHasNeighbours<TNode>
-        {
-            var closed = new HashSet<TNode>();
-
-            var queue = new PriorityQueue<double, Path<TNode>>();
-
-            queue.Enqueue(0, new Path<TNode>(start));
-
-            while(!queue.IsEmpty)
-            {
-                var path = queue.Dequeue();
-
-                if(closed.Contains(path.LastStep))
-                    continue;
-
-                if(path.LastStep.Equals(destination))
-                    return path;
-
-                closed.Add(path.LastStep);
-
-                foreach(TNode n in path.LastStep.Neighbours)
-                {
-                    double d = distance(path.LastStep, n);
-
-                    var newPath = path.AddStep(n, d);
-
-                    queue.Enqueue(newPath.TotalCost + estimate(n), newPath);
-                }
-            }
-
-            return null;
-        }
+//
+//        /// <summary>
+//        /// This is the method responsible for finding the shortest path between a Start and Destination cities using the A*
+//        /// search algorithm.
+//        /// </summary>
+//        /// <typeparam name="TNode">The Node type</typeparam>
+//        /// <param name="start">Start city</param>
+//        /// <param name="destination">Destination city</param>
+//        /// <param name="distance">Function which tells us the exact distance between two neighbours.</param>
+//        /// <param name="estimate">Function which tells us the estimated distance between the last node on a proposed path and the
+//        /// destination node.</param>
+//        /// <returns></returns>
+//        static public Path<TNode> FindPath<TNode>(
+//            TNode start,
+//            TNode destination,
+//            Func<TNode, TNode, double> distance,
+//            Func<TNode, double> estimate) where TNode : IHasNeighbours<TNode>
+//        {
+//            var closed = new HashSet<TNode>();
+//
+//            var queue = new PriorityQueue<double, Path<TNode>>();
+//
+//            queue.Enqueue(0, new Path<TNode>(start));
+//
+//            while(!queue.IsEmpty)
+//            {
+//                var path = queue.Dequeue();
+//
+//                if(closed.Contains(path.LastStep))
+//                    continue;
+//
+//                if(path.LastStep.Equals(destination))
+//                    return path;
+//
+//                closed.Add(path.LastStep);
+//
+//                foreach(TNode n in path.LastStep.Neighbours)
+//                {
+//                    double d = distance(path.LastStep, n);
+//
+//                    var newPath = path.AddStep(n, d);
+//
+//                    queue.Enqueue(newPath.TotalCost + estimate(n), newPath);
+//                }
+//            }
+//
+//            return null;
+//        }
     }
 
     sealed partial class Node : IHasNeighbours<Node>

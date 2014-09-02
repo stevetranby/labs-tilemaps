@@ -54,12 +54,12 @@ namespace ST
 
         // ----------------------------------------------------------------
 
-        public int getHealth ()
+        public int GetHealth ()
         {
             return health;
         }
 
-        public void adjustHealth (int healthAmount)
+        public void AdjustHealth (int healthAmount)
         {
             health += healthAmount;
             if (health > healthMax)
@@ -70,17 +70,17 @@ namespace ST
             }
         }
 
-        public float getHealthPercent ()
+        public float GetHealthPercent ()
         {
             return (float)health / (float)healthMax;
         }
 
-        public int getAttackPower ()
+        public int GetAttackPower ()
         {
             return attack + weaponAttack + strength/2;
         }
 
-        public int getDamagePower ()
+        public int GetDamagePower ()
         {
             return defense + armorDefense/2 + resiliance/4;
         }

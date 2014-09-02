@@ -1,21 +1,18 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace ST
 {
-    public class GameState : MonoBehaviour
+    /// <summary>
+    /// Game state.
+    /// 
+    /// STORE:
+    /// - player unique id
+    /// - units
+    /// - currency / credits / coins
+    /// - world updates from default generation
+    /// </summary>
+    public class GameState
     {
-
-        // Use this for initialization
-        void Start ()
-        {
-    
-        }
-    
-        // Update is called once per frame
-        void Update ()
-        {
-    
-        }
     }
 }
