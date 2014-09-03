@@ -118,7 +118,6 @@ namespace ST
                     this.cameraGO.transform.localPosition = p;
             }
 
-
             if (Input.GetKey (KeyCode.Q)) {
                 this.cameraGO.camera.orthographicSize += map.tUnit * cameraPanSpeed;
             }

@@ -62,6 +62,10 @@ http://docs.unity3d.com/Documentation/Manual/ExecutionOrder.html
 ## Scripting Utility Classes or Libraries/Frameworks
 https://github.com/mortennobel/UnityUtils
 
+## Animation and Animator State Machine
+- http://docs.unity3d.com/Manual/StateMachineBasics.html
+- http://www.codeproject.com/Articles/813160/Mastering-Unity-D-Game-Development-AI-and-State-ma
+
 ## Asset Store
 - NGUI http://www.tasharen.com/?page_id=140
 - Sprite Manager http://www.anbsoft.com/middleware/sm2/

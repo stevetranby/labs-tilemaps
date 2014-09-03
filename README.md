@@ -41,6 +41,19 @@ TODO
 
 - Look into whether nav mesh discussion makes sense in this context. It's much better suited for games architected in 3D, even if the camera perspective is 2D or fixed.
 
+Unity Tilemap Packages (some can parse .tmx from Tiled - mapeditor.org)
+----------------------
+- http://www.wyrmtale.com/products/unity3d-components/orthello-pro
+- http://karnakgames.com/wp/unity-tiled-tilemaps/
+- https://www.assetstore.unity3d.com/en/#!/content/17260/
+- http://www.seanba.com/introtiled2unity.html
+- https://bitbucket.org/PolCPP/unitmx/overview
+
+- http://www.seanba.com/mega-man-in-unity.html
+- http://www.seanba.com/megadadadventures.html
+- http://www.seanba.com/tiled2unity-edge-collider-support-in-tiled-layers.html
+- http://www.seanba.com/controlling-tiled2unity-scale.html
+
 Ideas
 -----------------------------------
 Multiple input schemes: 
@@ -54,6 +67,8 @@ Open Assets
 - http://www.lostgarden.com/2007/05/dancs-miraculously-flexible-game.html
 - http://opengameart.org/content/isometric-tiles-cubes
 - http://www.lostgarden.com/search/label/free%20game%20graphics
+
+- http://www.pioneervalleygames.com/free-resources.html
 
 Resources (Either as research or for reference writing tilemap tutorials)
 -----------------------------------

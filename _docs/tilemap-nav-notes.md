@@ -1,6 +1,10 @@
 Procedural Generation
 ----------------------
 
+## Map Generation
+http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
+http://www.redblobgames.com/articles/noise/introduction.html
+
 ## Noise Algorithms
 Noise Types - perlin, classic, fractal, simplex
 https://github.com/ashima/webgl-noise
