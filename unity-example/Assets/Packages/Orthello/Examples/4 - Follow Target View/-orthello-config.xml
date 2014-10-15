@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<orthello>
+  <config type="container">
+    <sizeMax>1024</sizeMax>
+    <exact>True</exact>
+    <square>False</square>
+    <fit>True</fit>
+    <deleteImages>False</deleteImages>
+    <containerType>sheet</containerType>
+    <sizeMaxIdx>2</sizeMaxIdx>
+    <scale>1</scale>
+    <addToScene>True</addToScene>
+  </config>
+</orthello>

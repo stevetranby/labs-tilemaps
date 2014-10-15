@@ -1,0 +1,5 @@
+
+  add the scene's level-0 (first) and level-2 (second) into
+  your build to test this perstance sample.
+
+  Run the builded application to in the editor with level-0 loaded.
