@@ -16,12 +16,14 @@ http://pcg.wikidot.com/pcg-algorithm:dungeon-generation
 ## Map Generation (terrain, biomes, rivers, etc)
 http://www.pixelenvy.ca/wa/river.html
 
+## LttP/Splunky like world/dungeon generation Lenna's Inception
+http://bytten-studio.com/devlog/2014/09/08/overworld-overview-part-1/
 
 Navigation/Pathfinding
 ----------------------
-
-- canonical resource: http://theory.stanford.edu/~amitp/GameProgramming/
+- http://theory.stanford.edu/~amitp/GameProgramming/
 - http://www.gamedev.net/page/resources/_/technical/artificial-intelligence/
+- http://qiao.github.io/PathFinding.js/visual/
 
 ## Heirarchical
 - for map sizes greater than 100x100 tiles
@@ -49,6 +51,8 @@ Navigation/Pathfinding
 ### AStar3D CSharp
 - http://roy-t.nl/index.php/2011/09/24/another-faster-version-of-a-2d3d-in-c/
 
+### AStarHelper for Unity C#
+- http://wiki.unity3d.com/index.php?title=AStarHelper
 
 Path Following
 --------------

@@ -70,9 +70,24 @@ https://github.com/mortennobel/UnityUtils
 - NGUI http://www.tasharen.com/?page_id=140
 - Sprite Manager http://www.anbsoft.com/middleware/sm2/
 - A*: http://www.arongranberg.com/astar/
-- RAIN AI: http://rivaltheory.com/rain/
---> Behavior Trees & navigation
+- RAIN AI (Behavior Trees/Nav): http://rivaltheory.com/rain/
 - Simple Path: http://u3d.as/content/alex-kring/simple-path/1QM
+
+- ex2d: http://ex-dev.com/ex2d/
+- Othello2d: http://www.wyrmtale.com/products/unity3d-components/orthello
+- 2dToolkit: http://www.unikronsoftware.com/2dtoolkit/unity2d.html
+- SpriteManager1[free]: https://github.com/Dkendal/SpriteManager
+- SpriteManager2[$150]: http://www.anbsoft.com/middleware/sm2/
+- Tiled2Unity: http://www.seanba.com/introtiled2unity.html
+
+### Importers
+- TexturePacker importer: https://www.assetstore.unity3d.com/en/#!/content/16641
+- Sparrow/Starling: othello2d has one, simple xml format
+- Tiled Map: ?? tiled2unity
+
+## Comparison of 2d frameworks
+- http://www.thesecretpie.com/2012/07/comparison-of-2d-frameworks-for-unity-3d.html
+- http://forum.unity3d.com/threads/sprite-manager-2-vs-2d-toolkit.110438/
 
 # Unity Answers of possible Usefulness
 http://forum.unity3d.com/threads/223030-Best-Easiest-way-to-change-color-of-certain-pixels-in-a-single-Sprite

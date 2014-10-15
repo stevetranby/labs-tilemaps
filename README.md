@@ -7,7 +7,7 @@ Purpose
 - Sharpen C# and game dev coding knowledge
 - Learn best practices or various ways to optimize for 2D tile-based games.
 - Test ideas outside the box (tile selection with heights, 3D primitives for 2D game, etc)
-- Learn to use Unity's various design patterns (entity-component, event + message passing, coroutines, etc) 
+- Learn to use Unity's various design patterns (entity-component, event + message passing, coroutines, etc)
 - Learn what doesn't work well for small/large/streaming/iso/hex tilemaps and data structures in Unity
 - For now to collect all thoughts on Game Dev (mainly with Unity atm), to separate out later into specific examples/tutorials
 
@@ -48,6 +48,7 @@ Unity Tilemap Packages (some can parse .tmx from Tiled - mapeditor.org)
 - https://www.assetstore.unity3d.com/en/#!/content/17260/
 - http://www.seanba.com/introtiled2unity.html
 - https://bitbucket.org/PolCPP/unitmx/overview
+- http://www.seanba.com/Tiled2Unity
 
 - http://www.seanba.com/mega-man-in-unity.html
 - http://www.seanba.com/megadadadventures.html
@@ -56,7 +57,7 @@ Unity Tilemap Packages (some can parse .tmx from Tiled - mapeditor.org)
 
 Ideas
 -----------------------------------
-Multiple input schemes: 
+Multiple input schemes:
 - click to move (RTS),
 - move toward touch (Mobile)
 - key/gamecontroller direct movement (Platformers, Final Fantasy)
@@ -72,6 +73,12 @@ Open Assets
 
 Resources (Either as research or for reference writing tilemap tutorials)
 -----------------------------------
+
+Game Development Code Patterns
+http://gameprogrammingpatterns.com/
+
+Unity Execution
+- http://docs.unity3d.com/Manual/ExecutionOrder.html
 
 Iso Tile Picking
 - http://www.xnaresources.com/default.asp?page=Tutorial:TileEngineSeries:7
@@ -99,4 +106,7 @@ Mini Maps Examples
 - http://www.sfml-dev.org/tutorials/2.0/images/graphics-view-minimap.png
 
 Visibility Culling for Minecraft Caves
-https://tomcc.github.io/2014/08/31/visibility-1.html
+- https://tomcc.github.io/2014/08/31/visibility-1.html
+
+Shaders
+- https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson6

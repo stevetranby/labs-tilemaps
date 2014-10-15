@@ -29,3 +29,14 @@ http://opengameart.org/
 
 ## Music
 http://incompetech.com/music/royalty-free/collections.php
+
+## Components, Aggregation, Composition (instead of pure inheritance)
+- http://scottbilas.com/files/2002/gdc_san_jose/game_objects_slides_with_notes.pdf
+- http://cmpmedia.vo.llnwd.net/o1/vault/gdccanada09/slides/marcinchadyGDCCanada.ppt
+- http://cowboyprogramming.com/2007/01/05/evolve-your-heirachy/
+- http://gamearchitect.net/2008/06/01/an-anatomy-of-despair-aggregation-over-inheritance/
+
+
+## Misc Shader Stuff
+- http://unitycoder.com/blog/2014/02/20/beach-sand-water-shader/
+- http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
