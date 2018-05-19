@@ -1,24 +1,20 @@
-KLITest
-=======
+# KLITest
 
 This is a demo showing one way to use KopiLuaInterface within Unity to
 allow user scripting.
 
-Please see http://gfootweb.webspace.virginmedia.com/LuaDemo/ for more 
+Please see http://gfootweb.webspace.virginmedia.com/LuaDemo/ for more
 information and a live instance of the demo.
 
-Assemblies
-==========
+# Assemblies
 
 The project includes precompiled assemblies for the Lua libraries - if you
-want to use them in your own projects, read the README file in the Assets/DLL 
+want to use them in your own projects, read the README file in the Assets/DLL
 directory, and pay attention to the COPYRIGHT file too.
 
-Scenes
-======
+# Scenes
 
-Controller.unity
-----------------
+## Controller.unity
 
 This is the scene that the WebPlayer runs.
 
@@ -33,8 +29,7 @@ and call whatever methods it likes.  Certainly for game purposes you'd want to
 disable most of that, and be selective about what you let users access.  Still,
 it's really neat that LuaInterface lets us do so much.
 
-KLITest.unity
--------------
+## KLITest.unity
 
 This scene is just a test really - there's a sphere in the scene from startup,
 which changes colour to red during initialization and later to green if Lua
@@ -45,17 +40,15 @@ UnityScript too.
 This isn't how I really test KopiLua - the KopiLua repo on my GitHub has much
 better test suites.
 
-License
-=======
+# License
 
-As I understand it, KopiLua and LuaInterface are both licensed under the 
+As I understand it, KopiLua and LuaInterface are both licensed under the
 MIT public license.  See the COPYRIGHT file for full details.
 
-All KLITest-specific code should be considered public domain - you can do 
+All KLITest-specific code should be considered public domain - you can do
 whatever you like with it.
 
-Contact
-=======
+# Contact
 
 You can contact me as gfoot on the Unity forums, or george.foot@gmail.com.
 
